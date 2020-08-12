@@ -39,8 +39,9 @@ function make(req, res) {
         await req.user.save();
         // updates users' contact information
         UserService.updateContactsData(req.user, () => {
-          res.json({ success: true });
-          UserService.updateContactsData(tutor, () => {});
+          UserService.updateContactsData(tutor, () => {
+            res.json({ success: true });
+          });
         });
         // removes tutor from tutor time, making tutor search query more efficient
         let tutorTime = await TutorTimes.findOne({

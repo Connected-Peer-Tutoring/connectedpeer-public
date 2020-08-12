@@ -1,4 +1,5 @@
 const User = require('./models/User');
+const ChatRoom = require('./models/ChatRoom');
 
 async function get(req, res) {
   try {
@@ -58,7 +59,7 @@ async function get(req, res) {
   }
 }
 
-function updateContactsData(user, callback) {
+async function updateContactsData(user, callback) {
   function getContactData(i) {
     return new Promise((res) => {
       User.findById(user.contacts[i], async (err, contact) => {
