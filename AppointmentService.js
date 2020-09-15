@@ -39,9 +39,8 @@ function make(req, res) {
         await req.user.save();
         // updates users' contact information
         UserService.updateContactsData(req.user, () => {
-          UserService.updateContactsData(tutor, () => {
-            res.json({ success: true });
-          });
+          res.json({ success: true });
+          UserService.updateContactsData(tutor, () => {});
         });
         // removes tutor from tutor time, making tutor search query more efficient
         let tutorTime = await TutorTimes.findOne({
@@ -133,7 +132,6 @@ function make(req, res) {
               console.log(
                 'There was an error contacting the Calendar service: ' + err
               );
-              return res.json({ success: false });
             }
             // updates appointment informations with google information
             appointment[3] = event.data.id;
@@ -162,7 +160,6 @@ function make(req, res) {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send(err);
   }
 }
 
@@ -216,7 +213,7 @@ async function cancel(req, res) {
         res.json({ success: true });
         // adds tutor back into end of tutor times for futur tutor search query
         let tutorTime = await TutorTimes.findOne({
-          time: req.body.appointment[0]
+          time: req.body[0]
         });
         tutorTime.push(req.body[2]);
         tutorTime.save();

@@ -23,15 +23,10 @@ async function get(req, res) {
           userPA.splice(0, 0, userA.shift());
         } else break;
       }
-      if (
-        userTA.length < req.user.tutorAvailability.length ||
-        userA.length < req.user.appointments.length
-      ) {
-        req.user.tutorAvailability = userTA;
-        req.user.appointments = userA;
-        req.user.pastAppointments = userPA;
-        req.user.save();
-      }
+      req.user.tutorAvailability = userTA;
+      req.user.appointments = userA;
+      req.user.pastAppointments = userPA;
+      await req.user.save();
       // sends user_data as json
       var user_data = {
         logged_in: logged_in,
@@ -59,7 +54,7 @@ async function get(req, res) {
   }
 }
 
-async function updateContactsData(user, callback) {
+function updateContactsData(user, callback) {
   function getContactData(i) {
     return new Promise((res) => {
       User.findById(user.contacts[i], async (err, contact) => {
@@ -219,6 +214,7 @@ function update(req, res) {
         if (user) updateContactsData(user, () => {});
       });
     }
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).send(err);

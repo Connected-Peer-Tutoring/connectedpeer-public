@@ -110,7 +110,7 @@ class UpdateUser extends Component {
     });
   }
 
-  onSubmit(e) {
+  async onSubmit(e) {
     e.preventDefault();
 
     const updatedUser = {
@@ -128,7 +128,7 @@ class UpdateUser extends Component {
         openErr: true
       });
     } else if (this.props.user_data.grade === 0) {
-      api.postUserUpdate(updatedUser);
+      await api.postUserUpdate(updatedUser);
       this.setState({
         openSuccess: true
       });
@@ -398,7 +398,12 @@ class UpdateUser extends Component {
           <Snackbar
             open={this.state.openErr}
             autoHideDuration={6000}
-            onClose={this.handleClose}>
+            onClose={this.handleClose}
+            onClick={() => {
+              this.setState({
+                openErr: false
+              });
+            }}>
             <MuiAlert
               elevation={6}
               variant='filled'
@@ -410,7 +415,12 @@ class UpdateUser extends Component {
           <Snackbar
             open={this.state.openSuccess}
             autoHideDuration={6000}
-            onClose={this.handleClose}>
+            onClose={this.handleClose}
+            onClick={() => {
+              this.setState({
+                openSuccess: false
+              });
+            }}>
             <MuiAlert
               elevation={6}
               variant='filled'

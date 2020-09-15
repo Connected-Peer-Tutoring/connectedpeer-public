@@ -17,6 +17,8 @@ class TutorSearch extends Component {
   constructor(props) {
     super(props);
 
+    this.handleSelect = this.handleSelect.bind(this);
+
     this.onChangeAvailableStart = this.onChangeAvailableStart.bind(this);
     this.onChangeAvailableEnd = this.onChangeAvailableEnd.bind(this);
     this.onChangeSubjects = this.onChangeSubjects.bind(this);
@@ -33,9 +35,16 @@ class TutorSearch extends Component {
       },
       openErrTime: false,
       openErrTime1: false,
+      openErrTime2: false,
       openErrSubjects: false,
-      tutors: []
+      tutors: [],
+      tutor_data: {},
+      chosenDate: null
     };
+  }
+
+  handleSelect(obj) {
+    this.setState({ tutor_data: obj.tutor_data, chosenDate: obj.chosenDate });
   }
 
   onChangeAvailableStart(e) {
@@ -43,6 +52,7 @@ class TutorSearch extends Component {
       availableStart: e,
       openErrTime: false,
       openErrTime1: false,
+      openErrTime2: false,
       openErrSubjects: false
     });
   }
@@ -52,6 +62,7 @@ class TutorSearch extends Component {
       availableEnd: e,
       openErrTime: false,
       openErrTime1: false,
+      openErrTime2: false,
       openErrSubjects: false
     });
   }
@@ -62,6 +73,7 @@ class TutorSearch extends Component {
         subjects: v,
         openErrTime: false,
         openErrTime1: false,
+        openErrTime2: false,
         openErrSubjects: true
       });
     else
@@ -69,6 +81,7 @@ class TutorSearch extends Component {
         subjects: v,
         openErrTime: false,
         openErrTime1: false,
+        openErrTime2: false,
         openErrSubjects: false
       });
   }
@@ -98,6 +111,10 @@ class TutorSearch extends Component {
     } else if (aStart - 86400000 < new Date().valueOf()) {
       this.setState({
         openErrTime1: true
+      });
+    } else if (aEnd - aStart > 21600000) {
+      this.setState({
+        openErrTime2: true
       });
     } else if (this.state.subjects.length > 5) {
       this.setState({
@@ -225,12 +242,20 @@ class TutorSearch extends Component {
             query={this.state.query}
             user_data={this.props.user_data}
             updateState={this.props.updateState}
+            tutor_data={this.state.tutor_data}
+            chosenDate={this.state.chosenDate}
+            setState={this.handleSelect}
           />
         </div>
         <Snackbar
           open={this.state.openErrTime}
           autoHideDuration={6000}
-          onClose={this.handleClose}>
+          onClose={this.handleClose}
+          onClick={() => {
+            this.setState({
+              openErrTime: false
+            });
+          }}>
           <MuiAlert
             elevation={6}
             variant='filled'
@@ -242,7 +267,12 @@ class TutorSearch extends Component {
         <Snackbar
           open={this.state.openErrTime1}
           autoHideDuration={6000}
-          onClose={this.handleClose}>
+          onClose={this.handleClose}
+          onClick={() => {
+            this.setState({
+              openErrTime1: false
+            });
+          }}>
           <MuiAlert
             elevation={6}
             variant='filled'
@@ -252,9 +282,31 @@ class TutorSearch extends Component {
           </MuiAlert>
         </Snackbar>
         <Snackbar
+          open={this.state.openErrTime2}
+          autoHideDuration={6000}
+          onClose={this.handleClose}
+          onClick={() => {
+            this.setState({
+              openErrTime2: false
+            });
+          }}>
+          <MuiAlert
+            elevation={6}
+            variant='filled'
+            onClose={this.handleClose}
+            severity='error'>
+            Your search time range must less than 6 hours
+          </MuiAlert>
+        </Snackbar>
+        <Snackbar
           open={this.state.openErrSubjects}
           autoHideDuration={6000}
-          onClose={this.handleClose}>
+          onClose={this.handleClose}
+          onClick={() => {
+            this.setState({
+              openErrSubjects: false
+            });
+          }}>
           <MuiAlert
             elevation={6}
             variant='filled'

@@ -23,8 +23,6 @@ connectDB();
 const app = express();
 const server = require('http').createServer(app);
 
-const io = require('socket.io')(server);
-
 // Body parser
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -95,6 +93,16 @@ app.use(function (req, res, next) {
 });
 
 // Socket io config
+const io = require('socket.io')(server);
+const redisAdapter = require('socket.io-redis');
+io.adapter(
+  redisAdapter({
+    host: process.env.REDIS_HOST_NAME,
+    port: process.env.REDIS_PORT,
+    auth_pass: process.env.REDIS_AUTH_PASS
+  })
+);
+
 io.on('connection', (socket) => {
   socket.on('connectToRoom', (room, password) => {
     ChatRoom.findById(room, (err, chatRoom) => {
@@ -108,7 +116,7 @@ io.on('connection', (socket) => {
 
   socket.on('newMessageFromUser', (message) => {
     socket.to(message.chatRoom).broadcast.emit('newMessage', message);
-    let newMessage = Message.create({
+    Message.create({
       chatRoom: message.chatRoom,
       message: message.message,
       sender: message.sender,
